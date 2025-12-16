@@ -31,15 +31,19 @@ jobs:
       uses: android-actions/setup-android@v3
 
     - name: Install dependencies
-      run: npm ci
+      run: npm install
 
     - name: Build web assets
       run: npm run build
 
-    - name: Setup Capacitor Android
+    - name: Add Android platform
       run: |
-        npx cap add android || true
-        npx cap sync android
+        echo "Adding Android platform..."
+        npx cap add android
+        echo "Android platform added successfully"
+
+    - name: Sync Capacitor
+      run: npx cap sync android
 
     - name: Make gradlew executable
       run: chmod +x android/gradlew
