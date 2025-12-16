@@ -4,6 +4,7 @@
  */
 
 import ShieldsEngine from './shields-engine.js';
+import { Browser } from '@capacitor/browser';
 
 class AuroraShieldApp {
   constructor() {
@@ -11,6 +12,7 @@ class AuroraShieldApp {
     this.tabs = [];
     this.activeTabId = null;
     this.pageBlocked = 0;
+    this.useInAppBrowser = true;
     
     this.init();
   }
@@ -37,6 +39,21 @@ class AuroraShieldApp {
       } catch (e) {
         console.log('StatusBar not available');
       }
+    }
+  }
+
+  // Open URL using Capacitor Browser (in-app browser)
+  async openInAppBrowser(url) {
+    try {
+      await Browser.open({ 
+        url: url,
+        presentationStyle: 'fullscreen',
+        toolbarColor: '#1a1a2e'
+      });
+    } catch (e) {
+      console.error('Browser open failed:', e);
+      // Fallback to system browser
+      window.open(url, '_system');
     }
   }
 
@@ -294,18 +311,13 @@ class AuroraShieldApp {
     this.pageBlocked = 0;
     this.updateStats();
     
-    // Show webview
-    this.welcomePage.classList.add('hidden');
-    this.settingsPage.classList.add('hidden');
-    this.webviewFrame.classList.remove('hidden');
-    
-    // Load URL in iframe (with ad blocking via proxy or service worker)
-    this.webviewFrame.src = url;
-    
     // Add to history
     tab.history.push(url);
     tab.historyIndex = tab.history.length - 1;
     this.updateNavButtons();
+    
+    // Use Capacitor Browser for external URLs (avoids iframe X-Frame-Options issues)
+    this.openInAppBrowser(url);
   }
 
   showWelcome() {
