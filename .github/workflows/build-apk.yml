@@ -36,11 +36,13 @@ jobs:
     - name: Build web assets
       run: npm run build
 
-    - name: Add Android platform
-      run: npx cap add android
+    - name: Setup Capacitor Android
+      run: |
+        npx cap add android || true
+        npx cap sync android
 
-    - name: Sync Capacitor
-      run: npx cap sync android
+    - name: Make gradlew executable
+      run: chmod +x android/gradlew
 
     - name: Build APK
       working-directory: android
