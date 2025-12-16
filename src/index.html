@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <meta name="theme-color" content="#1a1a2e">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <title>AuroraShield Browser</title>
+  <link rel="stylesheet" href="css/styles.css">
+  <link rel="icon" href="assets/icon.png">
+</head>
+<body>
+  <div id="app">
+    <!-- Status Bar Spacer -->
+    <div class="status-bar-spacer"></div>
+    
+    <!-- Navigation Bar -->
+    <div class="nav-bar">
+      <button id="backBtn" class="nav-btn" disabled>
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M15 18l-6-6 6-6"/>
+        </svg>
+      </button>
+      <button id="forwardBtn" class="nav-btn" disabled>
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M9 18l6-6-6-6"/>
+        </svg>
+      </button>
+      <button id="refreshBtn" class="nav-btn">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M23 4v6h-6M1 20v-6h6"/>
+          <path d="M3.51 9a9 9 0 0114.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0020.49 15"/>
+        </svg>
+      </button>
+      
+      <div class="url-container">
+        <span id="securityIcon" class="security-icon">🔒</span>
+        <input type="text" id="urlInput" placeholder="Search or enter URL" autocomplete="off" autocapitalize="none">
+      </div>
+      
+      <button id="shieldsBtn" class="nav-btn shields-btn">
+        <span class="shields-icon">🛡️</span>
+        <span id="shieldsCount" class="shields-count">0</span>
+      </button>
+      
+      <button id="menuBtn" class="nav-btn">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+          <circle cx="12" cy="5" r="2"/>
+          <circle cx="12" cy="12" r="2"/>
+          <circle cx="12" cy="19" r="2"/>
+        </svg>
+      </button>
+    </div>
+
+    <!-- Tabs Bar -->
+    <div class="tabs-bar">
+      <div id="tabsContainer" class="tabs-container"></div>
+      <button id="newTabBtn" class="new-tab-btn">+</button>
+    </div>
+
+    <!-- Browser Content -->
+    <div id="browserContent" class="browser-content">
+      <!-- Welcome Page -->
+      <div id="welcomePage" class="welcome-page">
+        <div class="welcome-logo">🛡️</div>
+        <h1>AuroraShield</h1>
+        <p>Privacy-focused browsing</p>
+        <div class="quick-links">
+          <button class="quick-link" data-url="https://duckduckgo.com">🔍 DuckDuckGo</button>
+          <button class="quick-link" data-url="https://google.com">🔎 Google</button>
+          <button class="quick-link" data-url="https://github.com">💻 GitHub</button>
+          <button class="quick-link" data-url="https://youtube.com">📺 YouTube</button>
+        </div>
+        <div class="shields-stats">
+          <div class="stat">
+            <span id="totalBlocked" class="stat-number">0</span>
+            <span class="stat-label">Ads Blocked</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Settings Page -->
+      <div id="settingsPage" class="settings-page hidden"></div>
+
+      <!-- WebView Container -->
+      <iframe id="webviewFrame" class="webview-frame hidden" sandbox="allow-scripts allow-same-origin allow-forms allow-popups"></iframe>
+    </div>
+
+    <!-- Shields Panel -->
+    <div id="shieldsPanel" class="shields-panel hidden">
+      <div class="panel-header">
+        <h3>🛡️ Shields</h3>
+        <button id="closePanelBtn" class="close-btn">×</button>
+      </div>
+      <div class="panel-content">
+        <div class="shield-toggle">
+          <span>Shields Enabled</span>
+          <label class="switch">
+            <input type="checkbox" id="shieldsToggle" checked>
+            <span class="slider"></span>
+          </label>
+        </div>
+        <div class="shield-stats">
+          <div class="stat-row">
+            <span>Blocked on this page</span>
+            <span id="pageBlocked">0</span>
+          </div>
+          <div class="stat-row">
+            <span>Total blocked</span>
+            <span id="totalBlockedPanel">0</span>
+          </div>
+        </div>
+        <button id="openSettingsBtn" class="settings-btn">Open Settings</button>
+      </div>
+    </div>
+
+    <!-- Menu Dropdown -->
+    <div id="menuDropdown" class="menu-dropdown hidden">
+      <button class="menu-item" data-action="new-tab">New Tab</button>
+      <button class="menu-item" data-action="settings">Settings</button>
+      <button class="menu-item" data-action="history">History</button>
+      <button class="menu-item" data-action="bookmarks">Bookmarks</button>
+      <hr>
+      <button class="menu-item" data-action="share">Share</button>
+      <button class="menu-item" data-action="about">About</button>
+    </div>
+  </div>
+
+  <script type="module" src="js/app.js"></script>
+</body>
+</html>

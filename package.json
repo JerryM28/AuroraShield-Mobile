@@ -1,0 +1,34 @@
+{
+  "name": "aurorashield-mobile",
+  "version": "1.0.0",
+  "description": "AuroraShield Privacy Browser for Android - Capacitor Version",
+  "main": "dist/index.html",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview",
+    "cap:init": "cap init AuroraShield com.aurorashield.browser --web-dir dist",
+    "cap:add": "cap add android",
+    "cap:sync": "cap sync",
+    "cap:open": "cap open android",
+    "cap:build": "npm run build && cap sync",
+    "android:build": "npm run build && cap sync && cd android && ./gradlew assembleDebug",
+    "android:release": "npm run build && cap sync && cd android && ./gradlew assembleRelease"
+  },
+  "dependencies": {
+    "@capacitor/android": "^5.6.0",
+    "@capacitor/app": "^5.0.6",
+    "@capacitor/core": "^5.6.0",
+    "@capacitor/preferences": "^5.0.6",
+    "@capacitor/browser": "^5.1.0",
+    "@capacitor/network": "^5.0.6",
+    "@capacitor/status-bar": "^5.0.6"
+  },
+  "devDependencies": {
+    "@capacitor/cli": "^5.6.0",
+    "vite": "^5.0.0"
+  },
+  "keywords": ["browser", "privacy", "adblock", "shields", "capacitor", "android"],
+  "author": "AuroraShield Team",
+  "license": "MIT"
+}
