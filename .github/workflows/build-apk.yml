@@ -36,12 +36,6 @@ jobs:
     - name: Build web assets
       run: npm run build
 
-    - name: Add Android platform
-      run: |
-        echo "Adding Android platform..."
-        npx cap add android
-        echo "Android platform added successfully"
-
     - name: Sync Capacitor
       run: npx cap sync android
 
