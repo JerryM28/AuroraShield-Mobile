@@ -269,41 +269,103 @@ public class WebViewActivity extends Activity {
     
     private void injectAdBlocker(WebView view) {
         String js = "(function() {" +
-            // CSS to hide ad elements
+            // Aggressive CSS to hide ad elements
             "var css = '" +
-            "[class*=\"ad-\"], [class*=\"ads-\"], [class*=\"advert\"], " +
+            // Standard ad selectors
+            "[class*=\"ad-\"], [class*=\"ads-\"], [class*=\"advert\"], [class*=\"adsbox\"], " +
             "[id*=\"ad-\"], [id*=\"ads-\"], [id*=\"advert\"], " +
-            "[class*=\"banner\"], [id*=\"banner\"], " +
+            "[class*=\"banner\"], [id*=\"banner\"], [class*=\"sponsor\"], " +
             "iframe[src*=\"ad\"], iframe[src*=\"doubleclick\"], " +
-            ".adsbygoogle, .ad-container, .ad-wrapper, .ad-slot, " +
+            ".adsbygoogle, .ad-container, .ad-wrapper, .ad-slot, .ad-unit, " +
             ".blox.mlb.kln, " +
+            // Popup/overlay selectors
             "[style*=\"z-index: 2147483647\"], " +
-            "div[style*=\"position: fixed\"][style*=\"z-index\"]:not([class]) " +
-            "{ display: none !important; visibility: hidden !important; height: 0 !important; }'; " +
+            "[style*=\"z-index:2147483647\"], " +
+            "div[style*=\"position: fixed\"][style*=\"z-index\"]:not([class]), " +
+            // Gambling/slot keywords in links and images
+            "a[href*=\"slot\"], a[href*=\"casino\"], a[href*=\"togel\"], a[href*=\"judi\"], " +
+            "a[href*=\"poker\"], a[href*=\"betting\"], a[href*=\"gacor\"], a[href*=\"maxwin\"], " +
+            "a[href*=\"sbobet\"], a[href*=\"bonus\"], a[href*=\"daftar\"], " +
+            "img[src*=\"slot\"], img[src*=\"casino\"], img[src*=\"bonus\"], img[src*=\"gacor\"], " +
+            "img[alt*=\"slot\"], img[alt*=\"casino\"], img[alt*=\"bonus\"], " +
+            // Common ad container classes
+            ".iklan, .ads, .advertisement, .sponsored, .promo-banner, " +
+            "div[data-ad], div[data-ads], div[data-advertisement], " +
+            "aside[class*=\"widget\"], .sidebar-ads, .floating-ads, " +
+            // Specific site patterns
+            "a[target=\"_blank\"][rel*=\"nofollow\"] img, " +
+            "div[onclick*=\"window.open\"], " +
+            "a[href*=\"bit.ly\"], a[href*=\"tinyurl\"], a[href*=\"shorturl\"] " +
+            "{ display: none !important; visibility: hidden !important; height: 0 !important; width: 0 !important; overflow: hidden !important; }'; " +
             
             "var style = document.createElement('style');" +
             "style.type = 'text/css';" +
             "style.appendChild(document.createTextNode(css));" +
             "document.head.appendChild(style);" +
             
-            // Remove elements with high z-index (popups)
-            "var all = document.querySelectorAll('*');" +
-            "for (var i = 0; i < all.length; i++) {" +
-            "  var z = window.getComputedStyle(all[i]).zIndex;" +
-            "  if (z && parseInt(z) >= 2147483640) {" +
-            "    all[i].remove();" +
+            // Remove gambling/slot images by content
+            "document.querySelectorAll('img').forEach(function(img) {" +
+            "  var src = (img.src || '').toLowerCase();" +
+            "  var alt = (img.alt || '').toLowerCase();" +
+            "  var keywords = ['slot', 'casino', 'poker', 'togel', 'judi', 'gacor', 'maxwin', 'bonus', 'jackpot', 'scatter', 'rtp', 'sbobet', 'pragmatic', 'joker', 'deposit'];" +
+            "  for (var i = 0; i < keywords.length; i++) {" +
+            "    if (src.indexOf(keywords[i]) !== -1 || alt.indexOf(keywords[i]) !== -1) {" +
+            "      img.remove();" +
+            "      break;" +
+            "    }" +
             "  }" +
-            "}" +
+            "});" +
             
-            // Remove iframes with about:blank in fixed containers
-            "document.querySelectorAll('div[style*=\"position: fixed\"] iframe[src=\"about:blank\"]').forEach(function(el) {" +
-            "  el.parentElement.remove();" +
+            // Remove links to gambling sites
+            "document.querySelectorAll('a').forEach(function(a) {" +
+            "  var href = (a.href || '').toLowerCase();" +
+            "  var text = (a.textContent || '').toLowerCase();" +
+            "  var keywords = ['slot', 'casino', 'poker', 'togel', 'judi', 'gacor', 'maxwin', 'sbobet', 'daftar', 'bonus 100'];" +
+            "  for (var i = 0; i < keywords.length; i++) {" +
+            "    if (href.indexOf(keywords[i]) !== -1 || text.indexOf(keywords[i]) !== -1) {" +
+            "      a.remove();" +
+            "      break;" +
+            "    }" +
+            "  }" +
+            "});" +
+            
+            // Remove elements with high z-index (popups)
+            "document.querySelectorAll('*').forEach(function(el) {" +
+            "  var z = window.getComputedStyle(el).zIndex;" +
+            "  if (z && parseInt(z) >= 999999) {" +
+            "    el.remove();" +
+            "  }" +
+            "});" +
+            
+            // Remove fixed position overlays
+            "document.querySelectorAll('div[style*=\"position: fixed\"], div[style*=\"position:fixed\"]').forEach(function(el) {" +
+            "  if (el.querySelector('iframe') || el.querySelector('img[src*=\"ad\"]')) {" +
+            "    el.remove();" +
+            "  }" +
             "});" +
             
             // Block alert/confirm/prompt
             "window.alert = function() {};" +
             "window.confirm = function() { return false; };" +
             "window.prompt = function() { return null; };" +
+            
+            // Block window.open popups
+            "window.open = function() { return null; };" +
+            
+            // Mutation observer to catch dynamically added ads
+            "var observer = new MutationObserver(function(mutations) {" +
+            "  mutations.forEach(function(m) {" +
+            "    m.addedNodes.forEach(function(node) {" +
+            "      if (node.nodeType === 1) {" +
+            "        var html = node.outerHTML ? node.outerHTML.toLowerCase() : '';" +
+            "        if (html.indexOf('slot') !== -1 || html.indexOf('casino') !== -1 || html.indexOf('gacor') !== -1 || html.indexOf('bonus') !== -1) {" +
+            "          node.remove();" +
+            "        }" +
+            "      }" +
+            "    });" +
+            "  });" +
+            "});" +
+            "observer.observe(document.body, {childList: true, subtree: true});" +
             
             "})();";
         
