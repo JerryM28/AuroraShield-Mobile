@@ -4,7 +4,10 @@
  */
 
 import ShieldsEngine from './shields-engine.js';
-import { Browser } from '@capacitor/browser';
+import { registerPlugin } from '@capacitor/core';
+
+// Register custom InAppWebView plugin
+const InAppWebView = registerPlugin('InAppWebView');
 
 class AuroraShieldApp {
   constructor() {
@@ -12,7 +15,6 @@ class AuroraShieldApp {
     this.tabs = [];
     this.activeTabId = null;
     this.pageBlocked = 0;
-    this.useInAppBrowser = true;
     
     this.init();
   }
@@ -42,18 +44,17 @@ class AuroraShieldApp {
     }
   }
 
-  // Open URL using Capacitor Browser (in-app browser)
+  // Open URL using native WebView (stays in app)
   async openInAppBrowser(url) {
     try {
-      await Browser.open({ 
-        url: url,
-        presentationStyle: 'fullscreen',
-        toolbarColor: '#1a1a2e'
-      });
+      await InAppWebView.open({ url: url });
     } catch (e) {
-      console.error('Browser open failed:', e);
-      // Fallback to system browser
-      window.open(url, '_system');
+      console.error('InAppWebView failed:', e);
+      // Fallback: try opening in iframe
+      this.welcomePage.classList.add('hidden');
+      this.settingsPage.classList.add('hidden');
+      this.webviewFrame.classList.remove('hidden');
+      this.webviewFrame.src = url;
     }
   }
 
